@@ -204,6 +204,9 @@ def controlled_run(wrapper, counter):
 
 	# values = dict()
 	# Main game loop
+	old_values= None
+	old_response = None
+
 	while not crashed and not gameEnded:
 
 		for event in pygame.event.get():
@@ -245,7 +248,7 @@ def controlled_run(wrapper, counter):
 				values['action'] = old_action
 
 			if old_closest_enemy is None:
-				values['old_closest_enemy'] = -1
+				values['old_closest_enemy'] =1000
 			else:
 				values['old_closest_enemy'] = old_closest_enemy
 
@@ -256,17 +259,33 @@ def controlled_run(wrapper, counter):
 						closest_enemy = enemy.x
 				values['closest_enemy'] = closest_enemy
 			else:
-				values['closest_enemy'] = -1
+				values['closest_enemy'] = 1000
 
 			values['score_increased'] = score_increased
-			wrapper.setPlayer(player)
-			wrapper.setCurrentScore(new_score)
+			# wrapper.setPlayer(player)
+			# wrapper.setCurrentScore(new_score)
+			# if(crashed == False):
+			# 	wrapper.reward(values)
+			# else:
+			# 	print("Crashed!")
+			# 	wrapper.reward(values,True)
 
-			wrapper.reward(values)
+
+
 			# wrapper.setCurrentScore(new_score
 
+			# if(old_response==1 and old_values!=None):
+			# 	if(player.get_y() == 400 or gameEnded == True):
+			
+			if(old_response != None and old_values!=None):
+				if(player.inair == True):
+						print("In AIR!")
+				wrapper.reward(old_values,values,old_response,score,gameEnded)
+			# 		print(gameEnded)
+			# else:
+    		# 		wrapper.reward(old_values,values,old_response,score)
+
 			response = wrapper.control(values)
-		
 			# Only take new action if the player can accept the action
 			# i.e. it is not in air
 			if not player.inair:
@@ -280,12 +299,17 @@ def controlled_run(wrapper, counter):
 
 			old_score = new_score
 			old_closest_enemy = values['closest_enemy']
-
-			
+			# if(response == 1):
+    		# 		old_values_jump=values
+			# 	old_response_jump=response
+			old_values=values
+			old_response=response
 	# pygame.quit()
 	# quit()
+		
+	wrapper.reward(old_values,values,old_response,score,gameEnded)
 
-	wrapper.gameover(score)
+	wrapper.gameover(score,values)
 
 if __name__ == '__main__':
 	run()
