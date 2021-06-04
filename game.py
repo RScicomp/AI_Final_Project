@@ -259,7 +259,12 @@ def controlled_run(wrapper, counter):
 				values['closest_enemy'] = -1
 
 			values['score_increased'] = score_increased
+			wrapper.setPlayer(player)
+			wrapper.setCurrentScore(new_score)
+
 			wrapper.reward(values)
+			# wrapper.setCurrentScore(new_score
+
 			response = wrapper.control(values)
 		
 			# Only take new action if the player can accept the action
